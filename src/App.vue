@@ -1,15 +1,17 @@
 <template>
-  <img alt="Vue logo" src="./assets/logo.png">
-  <HelloWorld msg="Welcome to Your Vue.js App"/>
+  <Landing> </Landing>
+  <GSC></GSC>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+import Landing from './components/Landing.vue'
+import GSC from './components/GSC.vue'
 
 export default {
   name: 'App',
   components: {
-    HelloWorld
+    GSC,
+    Landing
   }
 }
 </script>
@@ -20,7 +22,11 @@ export default {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
+  background-color: #000000;
   color: #2c3e50;
   margin-top: 60px;
+}
+body{
+ background-color: #000000;
 }
 </style>

@@ -5,10 +5,18 @@
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
-    "lint": "vue-cli-service lint"
+    "lint": "vue-cli-service lint",
+    "deploy": "sh deploy.sh"
   },
   "dependencies": {
-    "core-js": "^3.6.5",
+    "animejs": "^3.2.1",
+    "bootstrap": "^4.6.0",
+    "core-js": "^3.8.3",
+    "dataframe-js": "^1.4.4",
+    "locomotive-scroll": "^4.0.6",
+    "sass": "^1.32.5",
+    "scrollreveal": "^4.0.7",
+    "underscore": "^1.12.0",
     "vue": "^3.0.0"
   },
   "devDependencies": {
@@ -18,7 +26,7 @@
     "@vue/compiler-sfc": "^3.0.0",
     "babel-eslint": "^10.1.0",
     "eslint": "^6.7.2",
-    "eslint-plugin-vue": "^7.0.0-0"
+    "eslint-plugin-vue": "^7.5.0"
   },
   "eslintConfig": {
     "root": true,
