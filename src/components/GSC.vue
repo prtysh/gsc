@@ -1,21 +1,21 @@
 <template>
   <div class="container">
     <section class="filters">
-      <button @click="toggle" style="margin: 1em">Toggle</button>
-      <button @click="removeFilters" style="margin: 1em">Remove Filters</button>
+      <button @click="toggle" style="margin: 1em">Toggle Filters</button>
+      <button @click="removeFilters" style="margin: 1em">Remove All Filters</button>
       <div
         v-if="active"
         style="
           width: 100%;
           margin: auto;
-          position: absolute;
+          
           display: flex;
           justify-content: space-around;
           opacity: 0.85;
         "
       >
         <div class="author-filter">
-          <p>Authors</p>
+          <h3>Authors</h3>
           <form @submit.prevent="handleSubmit">
             <div
               class="form-group form-check"
@@ -30,22 +30,23 @@
                 v-model="user.authorCollection"
                 :id="item.name"
                 :value="item.name"
+                v-on:input="foo"
               />
             </div>
 
             <!-- print result -->
             <div class="form-group">
-              {{ user.authorCollection }}
+              <!-- {{ user.authorCollection }} -->
             </div>
 
             <div class="form-group">
-              <button class="btn btn-primary">Submit</button>
+              <!-- <button class="btn btn-primary">Submit</button> -->
             </div>
           </form>
         </div>
 
         <div class="title-filter">
-          <p>Title</p>
+          <h3>Title</h3>
           <form @submit.prevent="handleSubmit">
             <div
               class="form-group form-check"
@@ -65,17 +66,17 @@
 
             <!-- print result -->
             <div class="form-group">
-              {{ user.titleCollection }}
+              <!-- {{ user.titleCollection }} -->
             </div>
 
             <div class="form-group">
-              <button class="btn btn-primary">Submit</button>
+              <!-- <button class="btn btn-primary">Submit</button> -->
             </div>
           </form>
         </div>
 
         <div class="community-filter">
-          <p>Communities</p>
+          <h3>Communities</h3>
           <form @submit.prevent="handleSubmit">
             <div
               class="form-group form-check"
@@ -95,11 +96,11 @@
 
             <!-- print result -->
             <div class="form-group">
-              {{ user.communityCollection }}
+              <!-- {{ user.communityCollection }} -->
             </div>
 
             <div class="form-group">
-              <button class="btn btn-primary">Submit</button>
+              <!-- <button class="btn btn-primary">Submit</button> -->
             </div>
           </form>
         </div>
@@ -124,24 +125,24 @@
     >
       <div
         class="article-wrapper"
-        style="flex: 0 0 auto; margin: 10px"
+        style="padding: 3em"
         v-for="item in displayData"
         :key="item.ID"
       >
         <div class="author">
-          <p class="author">{{ item.author }}</p>
+          <h5 class="author">{{ item.author }}</h5>
         </div>
         <div class="title">
-          <p class="author">{{ item.topic }}</p>
+          <h6 class="topic">{{ item.topic }}</h6>
         </div>
         <div class="content">
-          <p class="author">{{ item.content }}</p>
+          <p class="content">{{ item.content }}</p>
         </div>
         <div class="video">
-          <p class="author">{{ item.author }}</p>
+          <!-- <p class="video">{{ item.video }}</p> -->
         </div>
         <div class="communities">
-          <p class="author">{{ item.author }}</p>
+          <!-- <p class="community">{{ item.community }}</p> -->
         </div>
       </div>
     </section>
@@ -156,6 +157,9 @@ export default {
     this.fetchData();
   },
   methods: {
+    foo(){
+      console.log(this.user.authorCollection);
+    },
     handleSubmit() {
       alert(JSON.stringify(this.user));
     },
@@ -171,23 +175,37 @@ export default {
       // this.constructModal();
     },
   },
+  computed:{
+
+  },
+  watch:{
+    user: function (){
+      console.log("hello");
+    }
+  },
   data() {
     return {
       displayData: [],
       active: true,
       Authors: [
-        { name: "Apple" },
-        { name: "Orange" },
-        { name: "Mengo" },
-        { name: "Cherry" },
+        { name: "SP" },
+        { name: "LP" },
+        { name: "RJO" },
+        { name: "GH" },
       ],
       Titles: [
-        { name: "Apple" },
-        { name: "Orange" },
-        { name: "Mengo" },
-        { name: "Cherry" },
+        { name: "Challenges faced by stakeholders" },
+        { name: "Mobility challenges created by the lockdown" },
+        { name: "Relief efforts" },
+        { name: "Gaps in government data" },
       ],
-      Communities: [{ name: "Abd" }, { name: "Abdc" }, { name: "Abddd" }],
+      Communities: [
+        { name: "urban poor & homeless" },
+        { name: "schoolchildren" },
+        { name: "general" },
+        { name: "women" },
+      ],
+
       user: {
         authorCollection: [],
         titleCollection: [],
@@ -239,18 +257,63 @@ section {
 
 .filtered-content::after {
   display: block;
-  content: " placeholder ";
   margin: 10px;
   flex: 999 999 auto;
 }
 
-.filtered-content > div:nth-child(2n + 1){
+.filtered-content > div:nth-child(5n + 1) {
   width: 15%;
 }
-.filtered-content > div:nth-child(2n + 2){
+.filtered-content > div:nth-child(5n + 2) {
   width: 20%;
 }
-.filtered-content > div:nth-child(2n + 3){
+.filtered-content > div:nth-child(5n + 3) {
   width: 35%;
+}
+.filtered-content > div:nth-child(5n + 4) {
+  width: 25%;
+}
+.filtered-content > div:nth-child(5n + 5) {
+  width: 45%;
+}
+p {
+  font-size: 12px;
+}
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+.filtered-content::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide scrollbar for IE, Edge and Firefox */
+.filtered-content {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
+@media only screen and (max-width: 1081px) {
+  .filtered-content > div:nth-child(2n + 1) {
+    width: 60%;
+  }
+  .filtered-content > div:nth-child(2n + 2) {
+    width: 70%;
+  }
+  .filtered-content > div:nth-child(2n + 3) {
+    width: 55%;
+  }
+}
+
+button {
+  background-color: #2c3e50;
+  color: #eeeeee;
+  border: none;
+  padding: 5px 20px;
+}
+
+
+
+p {
+  border-left: #eeeeee 1px solid;
+  padding-left: 1em;
 }
 </style>
