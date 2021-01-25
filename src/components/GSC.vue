@@ -2,13 +2,15 @@
   <div class="container">
     <section class="filters">
       <button @click="toggle" style="margin: 1em">Toggle Filters</button>
-      <button @click="removeFilters" style="margin: 1em">Remove All Filters</button>
+      <button @click="removeFilters" style="margin: 1em">
+        Remove All Filters
+      </button>
       <div
         v-if="active"
         style="
           width: 100%;
           margin: auto;
-          
+
           display: flex;
           justify-content: space-around;
           opacity: 0.85;
@@ -30,7 +32,7 @@
                 v-model="user.authorCollection"
                 :id="item.name"
                 :value="item.name"
-                v-on:input="foo"
+                @change="convertFilters"
               />
             </div>
 
@@ -129,20 +131,40 @@
         v-for="item in displayData"
         :key="item.ID"
       >
-        <div class="author">
-          <h5 class="author">{{ item.author }}</h5>
+        <div v-if="item.type === 'paragraph'">
+          <div class="author">
+            <h5 class="author">{{ item.author }}</h5>
+          </div>
+          <div class="title">
+            <h6 class="topic">{{ item.topic }}</h6>
+          </div>
+          <div class="content">
+            <p class="content" v-bind:class="item.color">
+              {{ item.content }}
+            </p>
+            <blockquote v-if="item.type === 'pullquote'">
+              {{ item.content }}
+            </blockquote>
+            <!-- <p class="content" v-bind:class="item.">{{ item.content }}</p> -->
+          </div>
+          <div class="video">
+            <!-- <p class="video">{{ item.video }}</p> -->
+          </div>
+          <div class="communities">
+            <!-- <p class="community">{{ item.community }}</p> -->
+          </div>
         </div>
-        <div class="title">
-          <h6 class="topic">{{ item.topic }}</h6>
-        </div>
-        <div class="content">
-          <p class="content">{{ item.content }}</p>
-        </div>
-        <div class="video">
-          <!-- <p class="video">{{ item.video }}</p> -->
-        </div>
-        <div class="communities">
-          <!-- <p class="community">{{ item.community }}</p> -->
+
+        <div v-if="item.type === 'pullquote'">
+          <div class="content">
+            <blockquote>
+              "{{ item.content }}"
+            </blockquote>
+
+            <div class="author">
+              <h5 style="text-align:right; padding-right: 3rem" class="author">- {{ item.author }}</h5>
+            </div>
+          </div>
         </div>
       </div>
     </section>
@@ -157,8 +179,71 @@ export default {
     this.fetchData();
   },
   methods: {
-    foo(){
-      console.log(this.user.authorCollection);
+    removeFilters() {
+      this.displayData = this.df.toCollection();
+    },
+    convertFilters() {
+      let filters = JSON.parse(JSON.stringify(this.user));
+
+      // filter by author
+
+      let d = [];
+      for (let i = 0; i < filters.authorCollection.length; i++) {
+        let v = filters.authorCollection[i];
+        let k = "author";
+        let o = { filterCriteria: k, filterOption: v };
+        d.push(o);
+      }
+
+      // filter by topics
+
+      for (let i = 0; i < filters.titleCollection.length; i++) {
+        let v = filters.titleCollection[i];
+        let k = "topic";
+        let o = { filterCriteria: k, filterOption: v };
+        d.push(o);
+      }
+
+      // filter by communities
+
+      for (let i = 0; i < filters.communityCollection.length; i++) {
+        let v = filters.communityCollection[i];
+        let k = "communities";
+        let o = { filterCriteria: k, filterOption: v };
+        d.push(o);
+      }
+
+      console.log(d);
+      this.constructFilterDF(d);
+      this.dataFiltering();
+    },
+    constructFilterDF(data) {
+      this.filterDf = new DataFrame(data, ["filterCriteria", "filterOption"]);
+      // this.filterDf.show();
+      this.filterArray = this.filterDf.toArray();
+      console.log(this.filterArray);
+    },
+    dataFiltering() {
+      this.displayData = [];
+      for (let i = 0; i < this.filterArray.length; i++) {
+        // console.log(typeof this.filterArray[i][0]);
+        // console.log(typeof this.filterArray[i][1]);
+        let colName = this.filterArray[i][0];
+        let rowValue = this.filterArray[i][1];
+        if (this.displayData.length === 0) {
+          this.displayData = this.df.filter((row) =>
+            row.get(colName).toString().includes(rowValue)
+          );
+        } else {
+          let dftemp = this.df.filter((row) =>
+            row.get(colName).toString().includes(rowValue)
+          );
+          this.displayData = this.displayData.union(dftemp);
+          this.displayData = this.displayData.dropDuplicates();
+        }
+      }
+      // this.displayData.select("Name", "Year of Deployment", "ID").show();
+      this.displayData = this.displayData.toCollection();
     },
     handleSubmit() {
       alert(JSON.stringify(this.user));
@@ -167,7 +252,7 @@ export default {
       this.active = !this.active;
     },
     async fetchData() {
-      this.df = await DataFrame.fromJSON("data1.json");
+      this.df = await DataFrame.fromJSON("data2.json");
       // this.df.cast("Year of Deployment", Number);
       // this.df = this.df.fillMissingValues("NA", ["Manner of Procurement"]);
       this.df.show();
@@ -175,16 +260,10 @@ export default {
       // this.constructModal();
     },
   },
-  computed:{
 
-  },
-  watch:{
-    user: function (){
-      console.log("hello");
-    }
-  },
   data() {
     return {
+      yellow: true,
       displayData: [],
       active: true,
       Authors: [
@@ -224,7 +303,7 @@ export default {
 };
 </script>
 
-    <!-- Add "scoped" attribute to limit CSS to this component only -->
+  
     <style>
 h3 {
   margin: 40px 0 0;
@@ -263,6 +342,7 @@ section {
 
 .filtered-content > div:nth-child(5n + 1) {
   width: 15%;
+  padding: 1em;
 }
 .filtered-content > div:nth-child(5n + 2) {
   width: 20%;
@@ -310,10 +390,32 @@ button {
   padding: 5px 20px;
 }
 
-
-
 p {
   border-left: #eeeeee 1px solid;
   padding-left: 1em;
 }
+
+.pink {
+  border-left: #ea62d8 2px double;
+}
+
+.yellow {
+  border-left: #eacb4f 2px double;
+}
+
+.orange {
+  border-left: #ea7e4f 1px double;
+}
+
+.purple {
+  border-left: #9b42f4 1px double;
+}
+
+.red {
+  border-left: #ef1a4c 1px double;
+}
+
+.brown {
+  border-left: #512818 1px double;
+} /*# sourceMappingURL=main.css.map */
 </style>
