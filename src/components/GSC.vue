@@ -63,6 +63,7 @@
                 v-model="user.titleCollection"
                 :id="item.name"
                 :value="item.name"
+                @change="convertFilters"
               />
             </div>
 
@@ -93,6 +94,7 @@
                 v-model="user.communityCollection"
                 :id="item.name"
                 :value="item.name"
+                @change="convertFilters"
               />
             </div>
 
@@ -157,12 +159,12 @@
 
         <div v-if="item.type === 'pullquote'">
           <div class="content">
-            <blockquote>
-              "{{ item.content }}"
-            </blockquote>
+            <blockquote>"{{ item.content }}"</blockquote>
 
             <div class="author">
-              <h5 style="text-align:right; padding-right: 3rem" class="author">- {{ item.author }}</h5>
+              <h5 style="text-align: right; padding-right: 3rem" class="author">
+                - {{ item.author }}
+              </h5>
             </div>
           </div>
         </div>
@@ -251,13 +253,40 @@ export default {
     toggle() {
       this.active = !this.active;
     },
+    getAuthors() {
+      let d = [];
+      let arr = this.df.unique("author").toArray();
+      for (let i = 0; i < arr.length; i++) {
+        let o = { name: arr[i][0] };
+        d.push(o);
+      }
+      this.Authors = d;
+    },
+    getTopics() {
+      let d = [];
+      let arr = this.df.unique("topic").toArray();
+      for (let i = 0; i < arr.length; i++) {
+        let o = { name: arr[i][0] };
+        d.push(o);
+      }
+      this.Titles = d;
+    },
+    getCommunities() {
+      let d = [];
+      let arr = this.df.unique("communities").toArray();
+      for (let i = 0; i < arr.length; i++) {
+        let o = { name: arr[i][0] };
+        d.push(o);
+      }
+      this.Communities = d;
+    },
     async fetchData() {
       this.df = await DataFrame.fromJSON("data2.json");
-      // this.df.cast("Year of Deployment", Number);
-      // this.df = this.df.fillMissingValues("NA", ["Manner of Procurement"]);
       this.df.show();
+      this.getAuthors();
+      this.getTopics();
+      this.getCommunities();
       this.displayData = this.df.toCollection();
-      // this.constructModal();
     },
   },
 
@@ -417,5 +446,13 @@ p {
 
 .brown {
   border-left: #512818 1px double;
-} /*# sourceMappingURL=main.css.map */
+}
+
+.green {
+  border-left: #7dba47 1px double;
+}
+
+.cyan {
+  border-left: #23d7eb 1px double;
+}
 </style>
