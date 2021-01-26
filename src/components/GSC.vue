@@ -5,28 +5,26 @@
       <button @click="removeFilters" style="margin: 1em">
         Remove All Filters
       </button>
+
       <div
+        class="filter-container"
         v-if="active"
         style="
+          position: absolute;
+          z-index: 10;
           width: 100%;
           margin: auto;
-
           display: flex;
           justify-content: space-around;
           opacity: 0.85;
+          background-color: #333333;
+          border-bottom: 2px double #cccccc;
         "
       >
-        <div class="author-filter">
+        <div class="filter">
           <h3>Authors</h3>
-          <form @submit.prevent="handleSubmit">
-            <div
-              class="form-group form-check"
-              v-for="item in Authors"
-              v-bind:key="item.id"
-            >
-              <label class="form-check-label" :for="item.id">{{
-                item.name
-              }}</label>
+          <div class="form-group" v-for="item in Authors" v-bind:key="item.id">
+            <label class="form-check-label" :for="item.id">
               <input
                 type="checkbox"
                 v-model="user.authorCollection"
@@ -34,86 +32,50 @@
                 :value="item.name"
                 @change="convertFilters"
               />
-            </div>
-
-            <!-- print result -->
-            <div class="form-group">
-              <!-- {{ user.authorCollection }} -->
-            </div>
-
-            <div class="form-group">
-              <!-- <button class="btn btn-primary">Submit</button> -->
-            </div>
-          </form>
+              {{ item.name }}
+            </label>
+          </div>
         </div>
 
-        <div class="title-filter">
+        <div class="filter">
           <h3>Title</h3>
-          <form @submit.prevent="handleSubmit">
-            <div
-              class="form-group form-check"
-              v-for="item in Titles"
-              v-bind:key="item.id"
-            >
-              <label class="form-check-label" :for="item.id">{{
-                item.name
-              }}</label>
+          <div class="form-group" v-for="item in Titles" v-bind:key="item.id">
+            <label class="form-check-label" :for="item.id">
               <input
                 type="checkbox"
                 v-model="user.titleCollection"
                 :id="item.name"
                 :value="item.name"
                 @change="convertFilters"
-              />
-            </div>
-
-            <!-- print result -->
-            <div class="form-group">
-              <!-- {{ user.titleCollection }} -->
-            </div>
-
-            <div class="form-group">
-              <!-- <button class="btn btn-primary">Submit</button> -->
-            </div>
-          </form>
+              />{{ item.name }}</label
+            >
+          </div>
         </div>
 
-        <div class="community-filter">
+        <div class="filter">
           <h3>Communities</h3>
-          <form @submit.prevent="handleSubmit">
-            <div
-              class="form-group form-check"
-              v-for="item in Communities"
-              v-bind:key="item.id"
-            >
-              <label class="form-check-label" :for="item.id">{{
-                item.name
-              }}</label>
+          <div
+            class="form-group"
+            v-for="item in Communities"
+            v-bind:key="item.id"
+          >
+            <label class="form-check-label" :for="item.id">
               <input
                 type="checkbox"
                 v-model="user.communityCollection"
                 :id="item.name"
                 :value="item.name"
                 @change="convertFilters"
-              />
-            </div>
-
-            <!-- print result -->
-            <div class="form-group">
-              <!-- {{ user.communityCollection }} -->
-            </div>
-
-            <div class="form-group">
-              <!-- <button class="btn btn-primary">Submit</button> -->
-            </div>
-          </form>
+              />{{ item.name }}
+            </label>
+          </div>
         </div>
       </div>
-      <div class="author"></div>
+      <!-- <div class="author"></div>
       <div class="title"></div>
       <div class="content"></div>
       <div class="video"></div>
-      <div class="communities"></div>
+      <div class="communities"></div> -->
     </section>
 
     <section
@@ -134,26 +96,13 @@
         :key="item.ID"
       >
         <div v-if="item.type === 'paragraph'">
-          <div class="author">
-            <h5 class="author">{{ item.author }}</h5>
-          </div>
           <div class="title">
-            <h6 class="topic">{{ item.topic }}</h6>
+            <h6 class="topic">{{ item.topic }} - {{ item.author }}</h6>
           </div>
-          <div class="content">
+          <div class="content easeout">
             <p class="content" v-bind:class="item.color">
               {{ item.content }}
             </p>
-            <blockquote v-if="item.type === 'pullquote'">
-              {{ item.content }}
-            </blockquote>
-            <!-- <p class="content" v-bind:class="item.">{{ item.content }}</p> -->
-          </div>
-          <div class="video">
-            <!-- <p class="video">{{ item.video }}</p> -->
-          </div>
-          <div class="communities">
-            <!-- <p class="community">{{ item.community }}</p> -->
           </div>
         </div>
 
@@ -168,6 +117,7 @@
             </div>
           </div>
         </div>
+        <div v-if="item.imgname1 !== 'no'"></div>
       </div>
     </section>
     <!-- <img class="cats" src="https://placekitten.com/g/200/300" alt="jacket" /> -->
@@ -176,13 +126,15 @@
 
     <script>
 import DataFrame from "dataframe-js";
+import anime from "animejs/lib/anime.es.js";
+
 export default {
   mounted() {
     this.fetchData();
   },
   methods: {
     removeFilters() {
-      this.displayData = this.df.toCollection();
+      window.location.reload(false);
     },
     convertFilters() {
       let filters = JSON.parse(JSON.stringify(this.user));
@@ -228,8 +180,6 @@ export default {
     dataFiltering() {
       this.displayData = [];
       for (let i = 0; i < this.filterArray.length; i++) {
-        // console.log(typeof this.filterArray[i][0]);
-        // console.log(typeof this.filterArray[i][1]);
         let colName = this.filterArray[i][0];
         let rowValue = this.filterArray[i][1];
         if (this.displayData.length === 0) {
@@ -244,14 +194,37 @@ export default {
           this.displayData = this.displayData.dropDuplicates();
         }
       }
-      // this.displayData.select("Name", "Year of Deployment", "ID").show();
       this.displayData = this.displayData.toCollection();
+      this.animate();
     },
     handleSubmit() {
       alert(JSON.stringify(this.user));
     },
     toggle() {
       this.active = !this.active;
+      // this.animate();
+      if (this.active === true) {
+        anime({
+          targets: ".filter-container",
+          translateY: 250,
+          duration: 1500,
+          // direction: "reverse",
+          easing: "easeInOutSine",
+        });
+        anime({
+          targets: ".filtered-content",
+          opacity: 0.4,
+          duration: 200,
+          easing: "easeInOutSine",
+        });
+      } else if (this.active === false) {
+        anime({
+          targets: ".filtered-content",
+          opacity: 1.0,
+          duration: 500,
+          easing: "linear",
+        });
+      }
     },
     getAuthors() {
       let d = [];
@@ -287,6 +260,26 @@ export default {
       this.getTopics();
       this.getCommunities();
       this.displayData = this.df.toCollection();
+      this.animate();
+    },
+    animate() {
+      anime({
+        targets: ".article-wrapper",
+
+        translateY: 250,
+        // rotate: "1turn",
+        duration: 200,
+        direction: "reverse",
+        easing: "easeInOutSine",
+      });
+      // let e = document.getElementsByClassName("article-wrapper");
+      // console.log(e.length);
+      // for (let i = 0; i < e.length; i++) {
+      //   console.log("hi");
+      //   e[i].style.transition = "all 1.0s linear 0s";
+      //   e[i].style.transform = "translateY(0px)";
+      //   e[i].style.opacity = "1";
+      // }
     },
   },
 
@@ -294,26 +287,10 @@ export default {
     return {
       yellow: true,
       displayData: [],
-      active: true,
-      Authors: [
-        { name: "SP" },
-        { name: "LP" },
-        { name: "RJO" },
-        { name: "GH" },
-      ],
-      Titles: [
-        { name: "Challenges faced by stakeholders" },
-        { name: "Mobility challenges created by the lockdown" },
-        { name: "Relief efforts" },
-        { name: "Gaps in government data" },
-      ],
-      Communities: [
-        { name: "urban poor & homeless" },
-        { name: "schoolchildren" },
-        { name: "general" },
-        { name: "women" },
-      ],
-
+      active: false,
+      Authors: [],
+      Titles: [],
+      Communities: [],
       user: {
         authorCollection: [],
         titleCollection: [],
@@ -326,16 +303,25 @@ export default {
   },
 
   name: "Mainpage",
-  props: {
-    msg: String,
-  },
 };
 </script>
 
   
     <style>
+.container {
+  display: flex;
+  flex-direction: column;
+  grid-gap: 0 10%;
+  justify-items: center;
+  position: relative;
+  background-color: #111111;
+}
+
 h3 {
-  margin: 40px 0 0;
+  margin: 40px 0 5px;
+  padding-left: 1em;
+  text-align: left;
+  border-bottom: 2px double #dddddd;
 }
 ul {
   list-style-type: none;
@@ -348,16 +334,6 @@ li {
 a {
   color: #42b983;
 }
-.container {
-  display: flex;
-  flex-direction: column;
-  grid-gap: 0 10%;
-  justify-items: center;
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-}
 
 section {
   color: #eeeeee;
@@ -369,22 +345,23 @@ section {
   flex: 999 999 auto;
 }
 
-.filtered-content > div:nth-child(5n + 1) {
-  width: 15%;
+.filtered-content > .article-wrapper:nth-child(5n + 1) {
+  width: 23%;
   padding: 1em;
 }
-.filtered-content > div:nth-child(5n + 2) {
-  width: 20%;
-}
-.filtered-content > div:nth-child(5n + 3) {
-  width: 35%;
-}
-.filtered-content > div:nth-child(5n + 4) {
+.filtered-content > .article-wrapper:nth-child(5n + 2) {
   width: 25%;
 }
-.filtered-content > div:nth-child(5n + 5) {
-  width: 45%;
+.filtered-content > .article-wrapper:nth-child(5n + 3) {
+  width: 35%;
 }
+.filtered-content > .article-wrapper:nth-child(5n + 4) {
+  width: 30%;
+}
+.filtered-content > .article-wrapper:nth-child(5n + 5) {
+  width: 39%;
+}
+
 p {
   font-size: 12px;
 }
@@ -424,6 +401,10 @@ p {
   padding-left: 1em;
 }
 
+h6 {
+  padding-left: 1em;
+}
+
 .pink {
   border-left: #ea62d8 2px double;
 }
@@ -454,5 +435,55 @@ p {
 
 .cyan {
   border-left: #23d7eb 1px double;
+}
+
+.article-wrapper {
+  /* transition: transform 1s cubic-bezier(0, 0, 0.32, 1.31); */
+  /* animation: test 4s cubic-bezier(0, 0, 0.32, 1.31) forwards; */
+  /* transform: translateY(300px); */
+  /* opacity: 0.2; */
+}
+@keyframes test {
+  0% {
+    transform: scale(1.3);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.article-wrapper:hover {
+  transform: scale(1.04);
+  background-color: #332222;
+}
+
+.filter {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group {
+  align-self: flex-start;
+}
+
+blockquote {
+  font-size: 15px;
+  text-align: right;
+  padding-right: 10px;
+  border-right: double 2px #eeeeee;
+}
+
+para-enter-from {
+  opacity: 0;
+  translate: rotate(40px);
+}
+
+para-enter-active {
+  transition: all 4s ease-in;
+}
+
+para-enter-to {
+  opacity: 1;
+  translate: rotate(140px);
 }
 </style>

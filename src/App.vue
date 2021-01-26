@@ -1,22 +1,26 @@
 <template>
-  <Landing> </Landing>
+  <!-- <Landing> </Landing> -->
   <GSC></GSC>
 </template>
 
 <script>
-import Landing from './components/Landing.vue'
-import GSC from './components/GSC.vue'
+// import Landing from "./components/Landing.vue";
+import GSC from "./components/GSC.vue";
 
 export default {
-  name: 'App',
+  name: "App",
   components: {
     GSC,
-    Landing
-  }
-}
+    // Landing,
+  },
+};
+
 </script>
 
 <style>
+:root{
+  --animation-time: 3s;
+}
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -24,9 +28,18 @@ export default {
   text-align: center;
   background-color: #000000;
   color: #2c3e50;
-  margin-top: 60px;
+  /* margin-top: 60px; */
+  margin: none;
+  padding: none;
+  scroll-snap-type: y proximity;
+  scroll-padding-top: 40px;
 }
-body{
- background-color: #000000;
+body {
+  background-color: #000000;
+  margin: 0;
 }
+
+#app div {
+  scroll-snap-align: center;
+} 
 </style>
