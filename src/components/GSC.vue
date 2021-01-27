@@ -6,71 +6,77 @@
         Remove All Filters
       </button>
 
-      <div
-        class="filter-container"
-        v-if="active"
-        style="
-          position: absolute;
-          z-index: 10;
-          width: 100%;
-          margin: auto;
-          display: flex;
-          justify-content: space-around;
-          opacity: 0.85;
-          background-color: #333333;
-          border-bottom: 2px double #cccccc;
-        "
-      >
-        <div class="filter">
-          <h3>Authors</h3>
-          <div class="form-group" v-for="item in Authors" v-bind:key="item.id">
-            <label class="form-check-label" :for="item.id">
-              <input
-                type="checkbox"
-                v-model="user.authorCollection"
-                :id="item.name"
-                :value="item.name"
-                @change="convertFilters"
-              />
-              {{ item.name }}
-            </label>
-          </div>
-        </div>
-
-        <div class="filter">
-          <h3>Title</h3>
-          <div class="form-group" v-for="item in Titles" v-bind:key="item.id">
-            <label class="form-check-label" :for="item.id">
-              <input
-                type="checkbox"
-                v-model="user.titleCollection"
-                :id="item.name"
-                :value="item.name"
-                @change="convertFilters"
-              />{{ item.name }}</label
+      <transition name="fade">
+        <div
+          class="filter-container"
+          v-if="active"
+          style="
+            position: absolute;
+            z-index: 10;
+            width: 100%;
+            margin: auto;
+            display: flex;
+            justify-content: space-around;
+            opacity: 0.85;
+            background-color: #333333;
+            border-bottom: 2px double #cccccc;
+          "
+        >
+          <div class="filter">
+            <h3>Authors</h3>
+            <div
+              class="form-group"
+              v-for="item in Authors"
+              v-bind:key="item.id"
             >
+              <label class="form-check-label" :for="item.id">
+                <input
+                  type="checkbox"
+                  v-model="user.authorCollection"
+                  :id="item.name"
+                  :value="item.name"
+                  @change="convertFilters"
+                />
+                {{ item.name }}
+              </label>
+            </div>
           </div>
-        </div>
 
-        <div class="filter">
-          <h3>Communities</h3>
-          <div
-            class="form-group"
-            v-for="item in Communities"
-            v-bind:key="item.id"
-          >
-            <label class="form-check-label" :for="item.id">
-              <input
-                type="checkbox"
-                v-model="user.communityCollection"
-                :id="item.name"
-                :value="item.name"
-                @change="convertFilters"
-              />{{ item.name }}
-            </label>
+          <div class="filter">
+            <h3>Title</h3>
+            <div class="form-group" v-for="item in Titles" v-bind:key="item.id">
+              <label class="form-check-label" :for="item.id">
+                <input
+                  type="checkbox"
+                  v-model="user.titleCollection"
+                  :id="item.name"
+                  :value="item.name"
+                  @change="convertFilters"
+                />{{ item.name }}</label
+              >
+            </div>
+          </div>
+
+          <div class="filter">
+            <h3>Communities</h3>
+            <div
+              class="form-group"
+              v-for="item in Communities"
+              v-bind:key="item.id"
+            >
+              <label class="form-check-label" :for="item.id">
+                <input
+                  type="checkbox"
+                  v-model="user.communityCollection"
+                  :id="item.name"
+                  :value="item.name"
+                  @change="convertFilters"
+                />{{ item.name }}
+              </label>
+            </div>
           </div>
         </div>
-      </div>
+      </transition>
       <!-- <div class="author"></div>
       <div class="title"></div>
       <div class="content"></div>
@@ -204,13 +210,6 @@ export default {
       this.active = !this.active;
       // this.animate();
       if (this.active === true) {
-        anime({
-          targets: ".filter-container",
-          translateY: 250,
-          duration: 1500,
-          // direction: "reverse",
-          easing: "easeInOutSine",
-        });
         anime({
           targets: ".filtered-content",
           opacity: 0.4,
@@ -443,18 +442,11 @@ h6 {
   /* transform: translateY(300px); */
   /* opacity: 0.2; */
 }
-@keyframes test {
-  0% {
-    transform: scale(1.3);
-  }
-  100% {
-    transform: scale(1);
-  }
-}
 
 .article-wrapper:hover {
   transform: scale(1.04);
   background-color: #332222;
+  box-shadow: 5px 5px 10px 1px rgba(255, 255, 255, 0.15);
 }
 
 .filter {
@@ -486,4 +478,16 @@ para-enter-to {
   opacity: 1;
   translate: rotate(140px);
 }
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: all 0.3s ease-in-out;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  transform: translateY(-250px);
+}
 </style>
+
+
